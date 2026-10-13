@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: int_providers_enriched
+    description: >
+      Silver dimension: one row per provider.
+      Combines the provider master record (PROV) with primary taxonomy code,
+      primary language, and NPI cross-reference.
+      Updated incrementally daily using LAST_MODIFIED_DATE from the source.
+    columns:
+      - name: provider_sk
+        description: "Surrogate key (= PROV_REC_ID for this first pass)."
+      - name: prov_rec_id
+        description: "Natural key — source system provider record ID."
+        tests:
+          - unique
+          - not_null
+      - name: prov_type
+        description: "I = Individual, G = Group, F = Facility."
+      - name: primary_taxonomy_code
+        description: "NUCC taxonomy code for the provider's primary specialty. NULL if no taxonomy record exists."
+      - name: npi
+        description: "National Provider Identifier from PRV_XREF1 where XREF_TYPE = 'NPI'."
+      - name: dw_load_date
+        description: "Timestamp when this row was last written by dbt."
+
+  - name: int_provider_addresses_enriched
+    description: >
+      Silver dimension: one row per provider + address type + line-of-business.
+      A single provider typically has multiple rows (HOME, WORK, MAILING addresses).
+      Updated incrementally daily using CHANGED_DATE from the source.
+    columns:
+      - name: provider_addr_sk
+        description: "MD5 surrogate key derived from PROV_REC_ID + ADDR_TYPE + LOB_ID."
+        tests:
+          - unique
+          - not_null
+      - name: prov_rec_id
+        description: "Foreign key to DIM_PROVIDER."
+        tests:
+          - not_null
+      - name: addr_type
+        description: "Address type: HOME, WORK, or MAILING."
+      - name: dw_load_date
+        description: "Timestamp when this row was last written by dbt."

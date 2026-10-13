@@ -1,0 +1,12 @@
+default:
+  target: default
+  outputs:
+    default:
+      type: snowflake
+      account: ""
+      user: ""
+      role: "{{ env_var('DBT_CURRENT_ROLE') }}"
+      database: "{{ env_var('DBT_DATABASE') }}"
+      warehouse: "{{ env_var('DBT_WAREHOUSE') }}"
+      schema: "{{ env_var('DBT_SCHEMA') }}"
+      threads: 4

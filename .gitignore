@@ -1,0 +1,19 @@
+# Setup scripts — exclude data generation (contains synthetic row counts)
+setup/01_bronze_data.sql
+setup/00_ddl.sql
+objects.json
+# 02_rbac.sql is intentionally tracked
+
+# dbt
+target/
+dbt_packages/
+logs/
+.dbt/
+
+# Snowflake CLI
+.snowflake/
+
+# Python
+__pycache__/
+*.pyc
+.env

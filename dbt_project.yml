@@ -1,0 +1,37 @@
+name: 'payer_provider'
+version: '1.0.0'
+config-version: 2
+
+profile: 'default'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+# Naming conventions follow the Snowflake environments guide:
+#   Staging:      named by SOURCE SYSTEM subfolder (oracle/)  → schema: STAGING
+#   Intermediate: named by DOMAIN subfolder (provider/)       → schema: INTERMEDIATE
+#   Marts:        named by DOMAIN subfolder (provider/)       → schema: MARTS
+#
+# Add new source subfolders under staging/ as new systems onboard (e.g. staging/sfdc/).
+# Add new domain subfolders under intermediate/ and marts/ as new subject areas are built.
+
+models:
+  payer_provider:
+    staging:
+      oracle:
+        +materialized: view
+        +schema: STAGING
+    intermediate:
+      provider:
+        +materialized: incremental
+        +schema: INTERMEDIATE
+        +incremental_strategy: merge
+    marts:
+      provider:
+        +materialized: incremental
+        +schema: MARTS
+        +incremental_strategy: merge

@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: dim_providers
+    description: >
+      Gold provider dimension. One row per provider (individual, group, or facility).
+      Combines the enriched provider record with the provider's primary WORK address.
+      Incremental merge on provider_sk; updated daily from int_providers_enriched
+      and int_provider_addresses_enriched.
+    columns:
+      - name: provider_sk
+        description: "Surrogate key (= PROV_REC_ID for this first pass)."
+        tests:
+          - unique
+          - not_null
+      - name: prov_id
+        description: "Source system provider ID."
+      - name: prov_type
+        description: "I = Individual, G = Group, F = Facility."
+      - name: gender
+        description: "Provider gender (individuals only)."
+      - name: primary_taxonomy_code
+        description: "NUCC taxonomy code for the provider's primary specialty."
+      - name: primary_language
+        description: "Primary language spoken by the provider."
+      - name: npi
+        description: "National Provider Identifier."
+      - name: street
+        description: "Primary WORK address street line."
+      - name: city
+        description: "Primary WORK address city."
+      - name: state
+        description: "Primary WORK address state."
+      - name: zip
+        description: "Primary WORK address ZIP code."
+      - name: phone
+        description: "Primary WORK address phone number."
+      - name: dw_load_date
+        description: "Timestamp when this row was last written by dbt."

@@ -1,0 +1,39 @@
+====================================================================================================
+1. INGESTION LAYER (Production Source of Truth)
+====================================================================================================
+Fivetran / Airbyte / Kafka
+    │
+    ▼
+PROD_DB (Snowflake Database)
+├── RAW_SFDC (Schema)  ──────────────────► accounts (Table), contacts (Table)
+├── RAW_STRIPE (Schema) ─────────────────► charges (Table), refunds (Table)
+└── RAW_POSTGRES (Schema) ───────────────► users (Table), orders (Table)
+
+
+====================================================================================================
+2. ENVIRONMENT REPLICATION & TRANSFORMATION LAYERS
+====================================================================================================
+
+                    CREATE SCHEMA DEV_DB.RAW_SFDC CLONE PROD_DB.RAW_SFDC;
+                    (Nightly or On-Demand Zero-Copy Clone)
+                                        │
+                                        ▼
+┌─────────────────────────────┐ ┌─────────────────────────────┐ ┌─────────────────────────────┐
+│     PROD_DB (Production)    │ │     TEST_DB (CI Pipeline)   │ │  DEV_DB_JOHN (Dev Sandbox)  │
+├─────────────────────────────┤ ├─────────────────────────────┤ ├─────────────────────────────┤
+│ SCHEMAS:                    │ │ SCHEMAS:                    │ │ SCHEMAS:                    │
+│                             │ │                             │ │                             │
+│ ── RAW_SFDC (Live)          │ │ ── RAW_SFDC (Cloned/Masked) │ │ ── RAW_SFDC (Cloned/Masked) │
+│ ── RAW_STRIPE (Live)        │ │ ── RAW_STRIPE (Cloned)      │ │ ── RAW_STRIPE (Cloned)      │
+│ ── RAW_POSTGRES (Live)      │ │ ── RAW_POSTGRES (Cloned)    │ │ ── RAW_POSTGRES (Cloned)    │
+│                             │ │                             │ │                             │
+│ ── STG_SFDC                 │ │ ── STG_SFDC                 │ │ ── STG_SFDC                 │
+│    └── stg_sfdc__accounts   │ │    └── stg_sfdc__accounts   │ │    └── stg_sfdc__accounts   │
+│                             │ │                             │ │                             │
+│ ── INT_FINANCE              │ │ ── INT_FINANCE              │ │ ── INT_FINANCE              │
+│    └── int_payments_pivoted │ │    └── int_payments_pivoted │ │    └── int_payments_pivoted │
+│                             │ │                             │ │                             │
+│ ── MART_FINANCE             │ │ ── MART_FINANCE             │ │ ── MART_FINANCE             │
+│    ├── dim_customers        │ │    ├── dim_customers        │ │    ├── dim_customers        │
+│    └── fct_orders           │ │    └── fct_orders           │ │    └── fct_orders           │
+└─────────────────────────────┘ └─────────────────────────────┘ └─────────────────────────────┘

@@ -1,0 +1,54 @@
+version: 2
+
+sources:
+  - name: oracle
+    database: "{{ env_var('DBT_SOURCE_DATABASE') }}"
+    schema: ORACLE
+    description: "Raw provider data sourced from Oracle provider management system."
+    tables:
+      - name: prov
+        description: "Core provider master record — one row per provider."
+        columns:
+          - name: PROV_REC_ID
+            description: "Surrogate key for the provider in the source system."
+          - name: PROV_ID
+            description: "Business identifier for the provider."
+          - name: PROV_TYPE
+            description: "Provider type: I = Individual, G = Group, F = Facility."
+
+      - name: prov_addr
+        description: "Provider address records — multiple addresses per provider (home, work, mailing)."
+
+      - name: prov_associate
+        description: "Provider-to-provider association records (group affiliations, hospital privileges)."
+
+      - name: prov_communication
+        description: "Provider communication records — phone, fax, email."
+
+      - name: prov_language
+        description: "Languages spoken by the provider or their staff."
+
+      - name: prov_taxonomy
+        description: >
+          NUCC taxonomy codes assigned to a provider.
+          A provider can have multiple codes; PRIMARY_FLAG = TRUE marks the primary specialty.
+
+      - name: prv_xref
+        description: "Legacy cross-reference table mapping providers to external identifiers."
+
+      - name: prv_xref1
+        description: >
+          Provider cross-reference identifiers (NPI, DEA, state license, tax ID, etc.).
+          Use XREF_TYPE to filter to a specific identifier type.
+
+      - name: vendor
+        description: "Vendor/group organization master records."
+
+      - name: vendor_address
+        description: "Vendor address records."
+
+      - name: vendor_provider_ref
+        description: "Association between vendors and individual providers."
+
+      - name: vendor_taxonomy
+        description: "NUCC taxonomy codes assigned to vendor organizations."
